@@ -1,9 +1,27 @@
+# wizardconnect-vue
+
+Vue 3 components and composables for WizardConnect dapp integration.
+
+## Installation
+
+```sh
+npm install wizardconnect-vue
+```
+
+```sh
+yarn add wizardconnect-vue
+```
+
+```sh
+pnpm add wizardconnect-vue
+```
+
 ## Sample Usage Using Quasar Template
 
 ```vue
 <template>
   <q-page class="row items-center justify-evenly">
-    <div v-if="!walletInstance" class="column items-center q-gutter-md">
+    <div v-if="!walletReady" class="column items-center q-gutter-md">
       <div class="text-h4">WizardConnect</div>
       <q-btn
         color="primary"
@@ -45,7 +63,7 @@ const { state, manager, uri, qrUri, walletName, connect, disconnect, error } = u
   dappName: 'My Example Dapp',
 })
 
-const walletInstance = ref<WizardConnectExternalWallet | null>(null)
+const walletReady = ref<boolean>(false)
 const balance = ref<bigint | undefined>()
 const utxos = ref()
 
@@ -58,6 +76,7 @@ watch([state, manager], async ([newState, newManager], [oldState, oldManager]) =
 
     newManager.addListener('walletready', (message: WalletReadyMessage) => {
       console.log('Handle wallet ready', message)
+      walletReady.value = true
     })
 
     newManager.addListener('messagereceived', (message: ProtocolMessage) => {
