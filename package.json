@@ -1,0 +1,52 @@
+{
+  "name": "wizardconnect-vue",
+  "version": "0.2.0",
+  "description": "Vue 3 components and composables for WizardConnect dapp integration",
+  "keywords": [
+    "wizardconnect",
+    "vue-adapter"
+  ],
+  "homepage": "https://gitlab.com/riftenlabs/lib/wizardconnect#readme",
+  "bugs": {
+    "url": "https://gitlab.com/riftenlabs/lib/wizardconnect/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/riftenlabs/lib/wizardconnect.git",
+    "directory": "packages/vue"
+  },
+  "author": "hantyrram <rongrammer@hotmail.com>",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest --config vitest.config.ts --run --passWithNoTests",
+    "lint:prettier": "prettier --ignore-path ../../.gitignore . --list-different",
+    "lint:eslint": "eslint .",
+    "lint": "npm run lint:eslint && npm run lint:prettier",
+    "fix": "npm run fix:eslint && npm run fix:prettier",
+    "fix:prettier": "prettier --ignore-path ../../.gitignore . --write",
+    "fix:eslint": "npm run lint:eslint -- --fix"
+  },
+  "dependencies": {
+    "@wizardconnect/core": "^0.2.0",
+    "@wizardconnect/dapp": "^0.2.0",
+    "qrcode-generator": "^1.4.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.0",
+    "@vue/test-utils": "^2.4.0",
+    "happy-dom": "^20.8.4",
+    "typescript": "^5.6.2",
+    "vite": "^6.0.0",
+    "vitest": "^3.2.3",
+    "vue": "^3.5.0"
+  },
+  "peerDependencies": {
+    "vue": "^3.0.0"
+  }
+}
