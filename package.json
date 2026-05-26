@@ -24,6 +24,7 @@
   ],
   "scripts": {
     "build": "tsc",
+    "prepare": "npm run build", 
     "test": "vitest --config vitest.config.ts --run --passWithNoTests",
     "lint:prettier": "prettier --ignore-path ../../.gitignore . --list-different",
     "lint:eslint": "eslint .",
