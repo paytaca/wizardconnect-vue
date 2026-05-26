@@ -1,6 +1,6 @@
 {
   "name": "@paytaca/wizardconnect-vue",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Vue 3 components and composables for WizardConnect dapp integration",
   "keywords": [
     "wizardconnect",
@@ -31,7 +31,7 @@
   ],
   "scripts": {
     "build": "tsc",
-    "prepare": "npm run build", 
+    "prepare": "npm run build",
     "test": "vitest --config vitest.config.ts --run --passWithNoTests",
     "lint:prettier": "prettier --ignore-path ../../.gitignore . --list-different",
     "lint:eslint": "eslint .",
