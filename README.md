@@ -5,15 +5,15 @@ Vue 3 components and composables for WizardConnect dapp integration.
 ## Installation
 
 ```sh
-npm install wizardconnect-vue
+npm install @paytaca/wizardconnect-vue
 ```
 
 ```sh
-yarn add wizardconnect-vue
+yarn add @paytaca/wizardconnect-vue
 ```
 
 ```sh
-pnpm add wizardconnect-vue
+pnpm add @paytaca/wizardconnect-vue
 ```
 
 ## Sample Usage Using Quasar Template
