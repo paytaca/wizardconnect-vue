@@ -6,14 +6,13 @@
     "wizardconnect",
     "vue-adapter"
   ],
-  "homepage": "https://gitlab.com/riftenlabs/lib/wizardconnect#readme",
+  "homepage": "https://github.com/paytaca/wizardconnect-vue#readme",
   "bugs": {
-    "url": "https://gitlab.com/riftenlabs/lib/wizardconnect/issues"
+    "url": "https://github.com/paytaca/wizardconnect-vue/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://gitlab.com/riftenlabs/lib/wizardconnect.git",
-    "directory": "packages/vue"
+    "url": "git+https://github.com/paytaca/wizardconnect-vue.git"
   },
   "author": "hantyrram <rongrammer@hotmail.com>",
   "type": "module",

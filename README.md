@@ -1,6 +1,23 @@
-# wizardconnect-vue
+# @paytaca/wizardconnect-vue
 
-Vue 3 components and composables for WizardConnect dapp integration.
+Vue 3 components and composables for integrating [WizardConnect](https://gitlab.com/riftenlabs/lib/wizardconnect) into your decentralized application.
+
+## What is WizardConnect?
+
+WizardConnect is a wallet connection protocol that enables a browser-based dapp to establish a secure, end-to-end encrypted connection with a mobile crypto wallet — without any centralized coordination. The dapp generates a QR code URI; the wallet scans it and both sides communicate through a relay server using encrypted messaging.
+
+This package (`@paytaca/wizardconnect-vue`) is the official Vue 3 adapter. It wraps the `@wizardconnect/core` and `@wizardconnect/dapp` packages into Vue-native composables and render-function components, so you can integrate wallet connectivity with minimal boilerplate.
+
+**Key features:**
+
+- `useWizardConnect` composable — manages the full connection lifecycle (`idle → connecting → connected → disconnected`)
+- Automatic session persistence and reconnection on page reload
+- `WizardConnectQRDialog` — a ready-to-use QR code modal component with no UI framework dependency
+- Exposes the underlying `DappConnectionManager` for low-level event handling
+- Written in TypeScript with full type exports
+- No `.vue` SFC files — pure ESM, tree-shakeable
+
+For protocol-level documentation, see the [WizardConnect monorepo](https://gitlab.com/riftenlabs/lib/wizardconnect).
 
 ## Installation
 
@@ -16,7 +33,68 @@ yarn add @paytaca/wizardconnect-vue
 pnpm add @paytaca/wizardconnect-vue
 ```
 
-## Sample Usage Using Quasar Template
+## API
+
+### `useWizardConnect(options)`
+
+The core composable. Handles relay initiation, QR code generation, session storage, and auto-reconnect.
+
+```ts
+const {
+  state,      // Ref<WizardConnectState> — 'idle' | 'connecting' | 'connected' | 'reconnecting' | 'disconnected'
+  manager,    // Ref<DappConnectionManager | undefined> — underlying manager for event listeners
+  uri,        // Ref<string | undefined> — raw WizardConnect URI
+  qrUri,      // Ref<string | undefined> — alphanumeric QR-encoded URI
+  walletName, // Ref<string | undefined> — name reported by the connected wallet
+  error,      // Ref<string | undefined> — last error message
+  connect,    // () => void — initiate connection (shows QR)
+  disconnect, // () => void — disconnect and clear session
+} = useWizardConnect({
+  dappName: 'My Dapp',
+  dappIcon: 'https://example.com/icon.png',
+  // relayUrls?: string[]       — custom relay server URLs
+  // sessionKey?: string        — localStorage key (default: 'wizardconnect-session')
+  // persistSession?: boolean   — whether to save session (default: true)
+  // storage?: SessionStorage   — custom storage implementation
+})
+```
+
+### `WizardConnectQRDialog`
+
+A modal dialog that renders the QR code for the wallet to scan. Teleports to `<body>`.
+
+```ts
+import { WizardConnectQRDialog } from '@paytaca/wizardconnect-vue'
+```
+
+| Prop | Type | Description |
+|---|---|---|
+| `show` | `boolean` | Whether the dialog is visible |
+| `uri` | `string` | Raw WizardConnect URI |
+| `qrUri` | `string` | Alphanumeric QR-encoded URI |
+| `onClose` | `() => void` | Called when the user closes the dialog |
+| `title` | `string?` | Dialog title (default: `'WizardConnect'`) |
+| `subtitle` | `string?` | Dialog subtitle |
+| `theme` | `WizardConnectQRTheme?` | Color/size overrides |
+| `onCopy` | `() => void?` | Called when the URI copy button is clicked |
+
+### `AlphanumericQRCode`
+
+Low-level canvas QR code component.
+
+```ts
+import { AlphanumericQRCode } from '@paytaca/wizardconnect-vue'
+```
+
+| Prop | Type | Description |
+|---|---|---|
+| `value` | `string` | The value to encode |
+| `size` | `number?` | Canvas size in pixels |
+| `foreground` | `string?` | QR foreground color |
+| `background` | `string?` | QR background color |
+| `quietZone` | `number?` | Quiet zone size |
+
+## Usage Example (Quasar)
 
 ```vue
 <template>
@@ -39,11 +117,10 @@ pnpm add @paytaca/wizardconnect-vue
 
     <div v-else class="column items-center q-gutter-md">
       <div class="text-h5">Connected</div>
-      <div v-if="walletName" class="text-subtitle2">
-        Wallet: {{ walletName }}
-      </div>
+      <div v-if="walletName" class="text-subtitle2">Wallet: {{ walletName }}</div>
       <q-btn color="negative" outline label="Disconnect" @click="disconnect" />
     </div>
+
     <WizardConnectQRDialog
       :show="state === 'connecting'"
       :uri="uri ?? ''"
@@ -55,7 +132,7 @@ pnpm add @paytaca/wizardconnect-vue
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { useWizardConnect, WizardConnectQRDialog } from '@wizardconnect/vue'
+import { useWizardConnect, WizardConnectQRDialog } from '@paytaca/wizardconnect-vue'
 import type { WalletReadyMessage, ProtocolMessage, DisconnectReason } from '@wizardconnect/core'
 
 const { state, manager, uri, qrUri, walletName, connect, disconnect, error } = useWizardConnect({
@@ -64,34 +141,30 @@ const { state, manager, uri, qrUri, walletName, connect, disconnect, error } = u
 })
 
 const walletReady = ref<boolean>(false)
-const balance = ref<bigint | undefined>()
-const utxos = ref()
 
-watch([state, manager], async ([newState, newManager], [oldState, oldManager]) => {
+watch([state, manager], async ([newState, newManager], [oldState]) => {
   if (newManager && oldState === 'idle') {
-    // Add listeners only when dapp manager starts from is instantiated and starts from idle
     newManager.addListener('disconnect', (reason: DisconnectReason, message: string | undefined) => {
-      console.log('Handle disconnect', reason, message)
+      console.log('Disconnected', reason, message)
     })
-
     newManager.addListener('walletready', (message: WalletReadyMessage) => {
-      console.log('Handle wallet ready', message)
       walletReady.value = true
     })
-
     newManager.addListener('messagereceived', (message: ProtocolMessage) => {
-      console.log('Handle message received', message)
+      console.log('Message received', message)
     })
-
     newManager.addListener('messagesent', (message: ProtocolMessage) => {
-      console.log('Handle message sent', message)
+      console.log('Message sent', message)
     })
   }
 
   if (newState === 'connected' && newManager) {
     // Do something when relay has successfully connected
   }
-  
 })
 </script>
 ```
+
+## License
+
+See [LICENSE](./LICENSE).
