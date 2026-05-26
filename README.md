@@ -94,6 +94,74 @@ import { AlphanumericQRCode } from '@paytaca/wizardconnect-vue'
 | `background` | `string?` | QR background color |
 | `quietZone` | `number?` | Quiet zone size |
 
+## Usage Example (Plain Vue 3)
+
+```vue
+<template>
+  <div class="wallet">
+    <div v-if="!walletReady">
+      <h2>WizardConnect</h2>
+      <button
+        @click="connect()"
+        :disabled="state === 'connected' || state === 'reconnecting'"
+      >
+        {{ state === 'connecting' ? 'Connecting...' : 'Connect Wallet' }}
+      </button>
+      <p v-if="state === 'connecting'">Waiting for wallet to connect...</p>
+      <p v-if="error" style="color: red">{{ error }}</p>
+      <p v-if="walletName">{{ walletName }}</p>
+    </div>
+
+    <div v-else>
+      <h2>Connected</h2>
+      <p v-if="walletName">Wallet: {{ walletName }}</p>
+      <button @click="disconnect">Disconnect</button>
+    </div>
+
+    <WizardConnectQRDialog
+      :show="state === 'connecting'"
+      :uri="uri ?? ''"
+      :qrUri="qrUri ?? ''"
+      :onClose="disconnect"
+    />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, watch } from 'vue'
+import { useWizardConnect, WizardConnectQRDialog } from '@paytaca/wizardconnect-vue'
+import type { WalletReadyMessage, ProtocolMessage, DisconnectReason } from '@wizardconnect/core'
+
+const { state, manager, uri, qrUri, walletName, connect, disconnect, error } = useWizardConnect({
+  dappIcon: 'https://<the url of your dapp icon>',
+  dappName: 'My Example Dapp',
+})
+
+const walletReady = ref<boolean>(false)
+
+watch([state, manager], async ([newState, newManager], [oldState]) => {
+  if (newManager && oldState === 'idle') {
+    newManager.addListener('disconnect', (reason: DisconnectReason, message: string | undefined) => {
+      console.log('Disconnected', reason, message)
+    })
+    newManager.addListener('walletready', (message: WalletReadyMessage) => {
+      walletReady.value = true
+    })
+    newManager.addListener('messagereceived', (message: ProtocolMessage) => {
+      console.log('Message received', message)
+    })
+    newManager.addListener('messagesent', (message: ProtocolMessage) => {
+      console.log('Message sent', message)
+    })
+  }
+
+  if (newState === 'connected' && newManager) {
+    // Do something when relay has successfully connected
+  }
+})
+</script>
+```
+
 ## Usage Example (Quasar)
 
 ```vue
