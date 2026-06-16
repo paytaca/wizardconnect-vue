@@ -54,6 +54,8 @@ export interface UseWizardConnectOptions {
   sessionKey?: string;
   persistSession?: boolean;
   storage?: SessionStorage;
+  reconnectInterval?: number;
+  maxReconnectAttempts?: number;
 }
 
 export interface UseWizardConnectResult {

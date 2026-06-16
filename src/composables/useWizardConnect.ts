@@ -23,6 +23,8 @@ export function useWizardConnect(
     sessionKey = DEFAULT_SESSION_KEY,
     persistSession = true,
     storage,
+    reconnectInterval,
+    maxReconnectAttempts,
   } = options;
 
   const state = ref<WizardConnectState>("idle");
@@ -83,6 +85,8 @@ export function useWizardConnect(
         {
           existingCredentials,
           explicitRelayUrls: relayUrls,
+          reconnectInterval,
+          maxReconnectAttempts,
         },
       );
 

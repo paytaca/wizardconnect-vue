@@ -239,6 +239,30 @@ describe("useWizardConnect", () => {
     wrapper.unmount();
   });
 
+  it("passes reconnectInterval and maxReconnectAttempts to initiateDappRelay", async () => {
+    const wrapper = mount(
+      createTestComponent({
+        reconnectInterval: 10000,
+        maxReconnectAttempts: 5,
+        persistSession: false,
+      }),
+    );
+    const result = wrapper.vm.result as UseWizardConnectResult;
+
+    result.connect();
+    await wrapper.vm.$nextTick();
+
+    const callArgs = vi.mocked(initiateDappRelay).mock.calls[0];
+    expect(callArgs[1]).toEqual(
+      expect.objectContaining({
+        reconnectInterval: 10000,
+        maxReconnectAttempts: 5,
+      }),
+    );
+
+    wrapper.unmount();
+  });
+
   it("attempts auto-reconnect when stored session has walletPublicKey", async () => {
     localStorage.setItem(
       SESSION_KEY,
