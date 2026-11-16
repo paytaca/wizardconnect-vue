@@ -2,6 +2,7 @@ export { WizardConnectQRDialog } from "./components/WizardConnectQRDialog.js";
 export { AlphanumericQRCode } from "./components/AlphanumericQRCode.js";
 export { useWizardConnect } from "./composables/useWizardConnect.js";
 export { useAlphanumericQRCode } from "./composables/useAlphanumericQRCode.js";
+export { WIZARDCONNECT_LOGO } from "./components/logo.js";
 export type {
   WizardConnectQRDialogProps,
   WizardConnectQRTheme,

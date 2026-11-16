@@ -1,6 +1,6 @@
 {
   "name": "@paytaca/wizardconnect-vue",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Vue 3 components and composables for WizardConnect dapp integration",
   "keywords": [
     "wizardconnect",

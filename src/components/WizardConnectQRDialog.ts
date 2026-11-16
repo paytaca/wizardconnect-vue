@@ -85,6 +85,8 @@ export const WizardConnectQRDialog = defineComponent({
       default: "Scan with your wallet to connect",
     },
     title: { type: String, default: "WizardConnect" },
+    copyLabel: { type: String, default: "Copy URI" },
+    qrCopyLabel: { type: String, default: "Copy connection URI" },
   },
   emits: ["update:show"],
   setup(props, { emit }) {
@@ -233,12 +235,21 @@ export const WizardConnectQRDialog = defineComponent({
                     props.subtitle,
                   ),
                   h(
-                    "div",
+                    "button",
                     {
+                      type: "button",
+                      onClick: handleCopy,
+                      "aria-label": props.qrCopyLabel,
+                      title: props.qrCopyLabel,
                       style: {
                         backgroundColor: t.qrBackground,
                         padding: "12px",
                         borderRadius: "12px",
+                        border: "none",
+                        display: "block",
+                        lineHeight: 0,
+                        cursor: "pointer",
+                        outlineOffset: "3px",
                       },
                     },
                     [
@@ -268,7 +279,8 @@ export const WizardConnectQRDialog = defineComponent({
                         font: "inherit",
                         transition: "border-color 0.15s",
                       },
-                      "aria-label": "Copy URI",
+                      "aria-label": props.copyLabel,
+                      title: props.copyLabel,
                     },
                     [
                       h(
