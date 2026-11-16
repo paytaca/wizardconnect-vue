@@ -25,7 +25,12 @@ describe("WizardConnectQRDialog", () => {
     qrUri: "WIZ://TEST",
   };
 
-  function render(props: Partial<typeof defaultProps> = {}) {
+  function render(
+    props: Partial<typeof defaultProps> & {
+      copyLabel?: string;
+      qrCopyLabel?: string;
+    } = {},
+  ) {
     return mount(WizardConnectQRDialog, {
       props: { ...defaultProps, ...props },
       global: {
@@ -101,6 +106,42 @@ describe("WizardConnectQRDialog", () => {
     await copyBtn.trigger("click");
     expect(onCopy).toHaveBeenCalledOnce();
     expect(onCopy).toHaveBeenCalledWith("wiz://copy-test");
+    wrapper.unmount();
+  });
+
+  it("calls onCopy with the URI when the QR code is clicked", async () => {
+    const onCopy = vi.fn();
+    const wrapper = render({ uri: "wiz://qr-click", onCopy });
+    const qrBtn = wrapper.find('button[aria-label="Copy connection URI"]');
+    expect(qrBtn.exists()).toBe(true);
+    expect(qrBtn.find("[data-testid='qr-code']").exists()).toBe(true);
+    await qrBtn.trigger("click");
+    expect(onCopy).toHaveBeenCalledOnce();
+    expect(onCopy).toHaveBeenCalledWith("wiz://qr-click");
+    wrapper.unmount();
+  });
+
+  it("shows the copied indicator after clicking the QR code", async () => {
+    const wrapper = render({ onCopy: vi.fn() });
+    expect(wrapper.text()).not.toContain("Copied!");
+    await wrapper
+      .find('button[aria-label="Copy connection URI"]')
+      .trigger("click");
+    expect(wrapper.text()).toContain("Copied!");
+    wrapper.unmount();
+  });
+
+  it("uses the custom copy labels", () => {
+    const wrapper = render({
+      copyLabel: "Kopiera länk",
+      qrCopyLabel: "Kopiera anslutningslänk",
+    });
+    expect(wrapper.find('button[aria-label="Kopiera länk"]').exists()).toBe(
+      true,
+    );
+    expect(
+      wrapper.find('button[aria-label="Kopiera anslutningslänk"]').exists(),
+    ).toBe(true);
     wrapper.unmount();
   });
 

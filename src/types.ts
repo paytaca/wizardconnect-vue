@@ -38,6 +38,8 @@ export interface WizardConnectQRDialogProps {
   class?: string;
   subtitle?: string;
   title?: string;
+  copyLabel?: string;
+  qrCopyLabel?: string;
 }
 
 export type WizardConnectState =
